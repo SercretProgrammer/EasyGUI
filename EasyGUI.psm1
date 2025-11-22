@@ -1,10 +1,30 @@
-Write-Host "Checking System Requirement . . ."
+Write-Host "Checking PowerShell version Requirement . . ."
 
-# Block PowerShell 6.x completely
-if ($PSVersionTable.PSVersion.Major -eq 6) {
-    Write-Error "EasyGUI does not support PowerShell 6.x. Please upgrade to PowerShell 7.0.1 or newer."
+# Requires PS 5.1 or 7+ (but not 6.x)
+$PSMajor = $PSVersionTable.PSVersion.Major
+$OS = [System.Environment]::OSVersion.Platform
+
+# Block unsupported OS first
+if ($OS -ne 'Win32NT') {
+    Write-Error "EasyGUI only supports Windows. Your current OS: $OS"
     return
 }
+
+# Block PowerShell older than 5.1
+if ($PSMajor -lt 5 -or ($PSMajor -eq 5 -and $PSVersionTable.PSVersion.Minor -lt 1)) {
+    Write-Error "EasyGUI requires at least PowerShell 5.1."
+    return
+}
+
+# Block PowerShell 6.x
+if ($PSMajor -eq 6) {
+    Write-Error "EasyGUI does NOT support PowerShell 6.x. Please install PowerShell 7 or use Windows PowerShell 5.1."
+    return
+}
+
+# Passed
+Write-Host "EasyGUI System and PowerShell Requirement Passed." -ForegroundColor Green
+
 
 
 Write-Verbose "Adding Required Assembly / Type Names . . ."
@@ -905,33 +925,5 @@ function Set-GUIWindow {
     $script:Window = $NewValue
 }
 
-$FunctionList = "function PrepareWindow",
-"function Window.Text",
-"function Window.AddButton",
-"function Window.AddInputBox",
-"function Window.InputApply",
-"function Window.AddOption",
-"function Window.AddTabControl",
-"function Window.AddTab",
-"function Window.AddRadioButtonApply",
-"function Window.AddRadioOption",
-"function Window.AddDropDown",
-"function Window.AddSuperApplyButton",
-"function Window.AddApplyOptionButton",
-"function Window.Close",
-"function Window.ControlLockCheckBox",
-"function Window.ControlLockEntireRadioID",
-"function IsOptionChecked",
-"function Select-Path",
-"function ShowWindow",
-"function Get-GUIWindow",
-"function Set-GUIWindow"
-
-$FunctionList | ForEach-Object { 
-    try {
-        Write-Verbose "Attempting to Load Function: $_"
-        Export-ModuleMember -Function $_ 
-} catch { throw "Error: $_" }
-}
 
 Write-Host "All GUI Functions Sucessfully loaded." -ForegroundColor Green
