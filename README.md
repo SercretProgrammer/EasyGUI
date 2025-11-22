@@ -10,7 +10,7 @@ Easy GUI PowerShell Module Allows you to create a GUI Easily in PowerShell
 Install-Module EasyGUI
 ```
 
-``If that doesn't work you can use:``
+``If that does not work you can use:``
 ```
 Install-Module EasyGUI -Force
 ```
